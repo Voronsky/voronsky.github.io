@@ -1,234 +1,91 @@
-<!doctype html> 
-<html lang="en"> 
-<head> 
-	<meta charset="UTF-8" />
-    <title>Phaser - Making your first game, part 9</title>
-	<script type="text/javascript" src="js/phaser.min.js"></script>
-    <style type="text/css">
-        body {
-            margin: 0;
-        }
-    </style>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Catch them Dogs!</title>
+    <script src="js/phaser.min.js"></script>
+    <script src="js/main.js"></script>
+
+<style>
+body
+{
+    color: #777;
+    font-family: "Avenir", Verdana, sans-serif;
+}
+#readme
+{
+    margin-top: 10px;
+}
+</style>
+
 </head>
 <body>
+<div id="game"></div>
+<div id="readme">
+<h2>Catch them Dogs!</h2>
+<ul>
 
-<script type="text/javascript">
+<li><strong>High Concept:</strong>
+A one-sentence summary of your game.
+</li>
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+<li><strong>Player Experience Goals:</strong>
+What experience do you want players to have when playing your game?
+</li>
 
-function preload() {
+<li><strong>Genre:</strong>
+A single sentence that places the game within a game genre or a hybrid of genres.
+</li>
 
-    game.load.image('sky', 'assets/sky.png');
-    game.load.image('ground', 'assets/platform.png');
-    game.load.image('star', 'assets/star.png');
-    game.load.spritesheet('Dog','assets/Dog.png',50,50);
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+<li><strong>Game play:</strong>
+A paragraph describing the actions the player can perform, the system dynamics, and the core mechanic. You can also describe game play that is not in the prototype. You may include mock-up images for parts of the game not in the prototype. Please also include a concise explanation of the prototype’s inputs and their expected effects.
+</li>
 
-}
+<li><strong>Prototype goal:</strong>
+What game mechanic is this prototype evaluating?
+</li>
 
-var player;
-var item;
-var platforms;
-var cursors;
+<li><strong>Features:</strong>
+What are the unique aspects of your game that set it apart?
+</li>
 
-var stars;
-var score = 0;
-var scoreText;
-var clock = 60000;
-var clockText;
+<li><strong>Setting/Premise:</strong>
+A paragraph about the world your game is set in and who the characters are. What makes the game world and its occupants unique and interesting? Do the tokens represent something? If the game has a backstory, put it here. If the game is abstract, then say so.
+</li>
 
-function create() {
+<li><strong>Story:</strong>
+If the game has a story, summarize it in a paragraph. How will the dramatic tension interact with the gameplay tension?
+</li>
 
-    //  We're going to be using physics, so enable the Arcade Physics system
-    game.physics.startSystem(Phaser.Physics.ARCADE);
+<li><strong>Target Audience:</strong>
+A single sentence that describes the demographic you're trying to reach.
+</li>
 
-    //  A simple background for our game
-    game.add.sprite(0, 0, 'sky');
+<li><strong>Play time:</strong>
+How long does your game take to play?
+</li>
 
-    //  The platforms group contains the ground and the 2 ledges we can jump on
-    platforms = game.add.group();
+<li><strong>Strategies:</strong>
+What player strategies do you expect will be effective at playing this game?
+</li>
 
-    //  We will enable physics for any object that is created in this group
-    platforms.enableBody = true;
+<li><strong>Estimated Schedule:</strong>
+How long will various aspects of your game take to develop? Think about this very thoroughly.
+</li>
 
-    // Here we create the ground.
-    var ground = platforms.create(0, game.world.height - 64, 'ground');
+<li><strong>Team:</strong>
+Briefly describe your capabilities, and then list skills that you might be lacking and would like in potential teammates.
+</li>
 
-    //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    ground.scale.setTo(2, 2);
+<li><strong>Prototype Assets:</strong>
+Did you make your prototype assets from scratch? Did you borrow them? Cite your sources here.
+</li>
 
-    //  This stops it from falling away when you jump on it
-    ground.body.immovable = true;
+<li><strong>Prototype Closest Other Game:</strong>
+Which other game most closely resembles your game? If you are polishing one of your previous digital or analog prototypes, you must say so here. If you are borrowing from a Phaser Example, you must say so here.
+</li>
 
-    //  Now let's create two ledges
-    var ledge = platforms.create(400, 400, 'ground');
-    ledge.body.immovable = true;
-
-    ledge = platforms.create(-150, 250, 'ground');
-    ledge.body.immovable = true;
-
-    // The player and its settings
-    player = game.add.sprite(32, game.world.height - 150, 'dude');
-
-    //  We need to enable physics on the player
-    game.physics.arcade.enable(player);
-
-    //  Player physics properties. Give the little guy a slight bounce.
-    player.body.bounce.y = 0.2;
-    player.body.gravity.y = 300;
-    player.body.collideWorldBounds = true;
-
-    //  Our two animations, walking left and right.
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
-    
-   
-    //Adding dog groups
-
-    dogs = game.add.group(); 
-    dogs.enableBody = true;
-
-    //Adding dog into the game at random X and Y
-    var dog = dogs.create(game.world.randomX, game.world.randomY, 'Dog');
-
-
-    //Adding dog physics
-    //game.physics.arcade.enable(dog);
-    
-    dog.body.bounce.y = 0.2;
-    dog.body.gravity.y = 320;
-    dog.body.collideWorldBounds = true;
-
-    //  Finally some stars to collect
-    stars = game.add.group();
-
-    //  We will enable physics for any star that is created in this group
-    stars.enableBody = true;
-
-    //  Here we'll create 12 of them evenly spaced apart
-    var star = stars.create(game.world.randomX, game.world.randomY, 'star');
-    star.body.gravity.y = 300;
-    star.body.bounce.y = 0.9;
-    game.time.events.repeat(Phaser.Timer.SECOND*30, 50, resurrectStar, this);
-    /*for (var i = 0; i < 12; i++)
-    {
-        //  Create a star inside of the 'stars' group
-        var star = stars.create(game.world.randomX, game.world.randomY, 'star');
-
-        //  Let gravity do its thing
-        star.body.gravity.y = 300;
-
-        //  This just gives each star a slightly random bounce value
-        star.body.bounce.y = 0.7 + Math.random() * 0.2;
-    }*/
-
-    //  The score
-    scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-    clockText = game.add.text(40,40, 'Time: ' + clock, {fontSize: '32px', fill: '#000' });			
-
-    //  Our controls.
-    cursors = game.input.keyboard.createCursorKeys();
-    
-}
-
-function update() {
-
-    //  Collide the player and the stars with the platforms
-    game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(stars, platforms);
-    game.physics.arcade.collide(dogs, platforms);
-
-    //  Checks to see if the player overlaps with any of the dogs, if he does call the collectDog function
-    game.physics.arcade.overlap(player, dogs, collectDog, null, this);
-    //  Checks to see if the player overlaps with any of the stars, if so call the collectStar			
-    game.physics.arcade.overlap(player, stars, collectStars, null, this);
-
-    //  Reset the players velocity (movement)
-    player.body.velocity.x = 0;
-
-    if (cursors.left.isDown)
-    {
-        //  Move to the left
-        player.body.velocity.x = -150;
-
-        player.animations.play('left');
-    }
-    else if (cursors.right.isDown)
-    {
-        //  Move to the right
-        player.body.velocity.x = 150;
-
-        player.animations.play('right');
-    }
-    else
-    {
-        //  Stand still
-        player.animations.stop();
-
-        player.frame = 4;
-    }
-    
-    //  Allow the player to jump if they are touching the ground.
-    if (cursors.up.isDown && player.body.touching.down)
-    {
-        player.body.velocity.y = -350;
-    }
-
-    updateCounter();
-
-}
-
-function collectDog (player, dogs) {
-    
-    // Removes the dog from the screen
-    dogs.kill();
-	
-    // Spawn another one
-    resurrectDog();			
-
-    //  Add and update the score
-    score += 10;
-    scoreText.text = 'Score: ' + score;
-
-}
-
-function collectStars (player, stars) {
-    //Remove the stars			
-    stars.kill();			
-
-    //Add 100 miliseconds			
-    clock+=100;
-    clockText.text = ("Time: "+clock);
-}
-			
-function resurrectDog() {
-   var thing = dogs.getFirstDead();
-
-   if (thing)
-   {
-     
-      thing.reset(game.world.randomX,game.world.randomY);
-
-   }
-}
-
-function resurrectStar() {
-   var thing = stars.getFirstDead();
-
-   if (thing)
-   {
-     
-      thing.reset(game.world.randomX,game.world.randomY);
-
-   }
-}
-function updateCounter() {
-   clock--;
-   clockText.setText("Time: " + clock);
-}
-
-
-</script>
-
+</ul>
+</div>
 </body>
 </html>
